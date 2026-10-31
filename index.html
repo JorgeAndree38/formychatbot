@@ -1,0 +1,340 @@
+{
+  "name": "Andree-AI Agente consulting — Formulario + Chatbot → Promomail",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Andree-AI Agente consulting — Promomail automático\n\n**Dos entradas, un solo catálogo:**\n- **Formulario**: la persona marca los servicios que le interesan (Consultoría de IA, Masterclass, Conferencia) → el **Agente Redactor** arma un promomail personalizado → se envía por Gmail.\n- **Chatbot**: la persona conversa con el **Agente Chatbot**, que responde dudas, pide nombre + correo y envía el promomail con su herramienta Gmail.\n\n**Antes de activar**\n1. Edita el nodo **Catálogo de servicios** (precios, fechas, WhatsApp, links). Lo que diga `[POR DEFINIR]` el agente NO lo muestra.\n2. Crea la credencial **Anthropic** en los 2 nodos *Claude*.\n3. Crea la credencial **Gmail OAuth2** en *Enviar promomail* y en *Herramienta: Enviar promomail*.\n4. Prueba el formulario y el chat; luego **activa** el flujo.",
+        "height": 520,
+        "width": 560,
+        "color": 4
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000001",
+      "name": "Instrucciones",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-760, -420]
+    },
+    {
+      "parameters": {
+        "formTitle": "Andree-AI Agente consulting",
+        "formDescription": "Solicita información sobre nuestros servicios de Inteligencia Artificial. Te enviaremos los detalles a tu correo en unos minutos.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nombre completo",
+              "placeholder": "Ej. María Pérez",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Correo electrónico",
+              "fieldType": "email",
+              "placeholder": "tucorreo@empresa.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Empresa",
+              "placeholder": "Opcional"
+            },
+            {
+              "fieldLabel": "Teléfono / WhatsApp",
+              "placeholder": "Opcional"
+            },
+            {
+              "fieldLabel": "Servicios de interés",
+              "fieldType": "dropdown",
+              "multiselect": true,
+              "fieldOptions": {
+                "values": [
+                  { "option": "Consultoría de IA" },
+                  { "option": "Masterclass" },
+                  { "option": "Conferencia" }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Mensaje o consulta",
+              "fieldType": "textarea",
+              "placeholder": "Cuéntanos qué necesitas (opcional)"
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "buttonLabel": "Quiero recibir información"
+        }
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000002",
+      "name": "Formulario Andree-AI",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [-120, -120],
+      "webhookId": "5d0e8a3b-2c4f-4b7a-9e61-andreeaiform01"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "mode": "hostedChat",
+        "initialMessages": "¡Hola! 👋 Soy el asistente virtual de Andree-AI Agente consulting.\n¿Te interesa nuestra Consultoría de IA, la Masterclass o la Conferencia? Pregúntame lo que quieras y te envío toda la información a tu correo.",
+        "options": {
+          "title": "Andree-AI Agente consulting",
+          "subtitle": "Consultoría de IA · Masterclass · Conferencia",
+          "inputPlaceholder": "Escribe tu pregunta..."
+        }
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000003",
+      "name": "Chat Andree-AI",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [-120, 120],
+      "webhookId": "7f2b9c4d-3e5a-4c8b-a172-andreeaichat01"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cat-0001-marca",
+              "name": "marca",
+              "value": "Andree-AI Agente consulting",
+              "type": "string"
+            },
+            {
+              "id": "cat-0003-whatsapp",
+              "name": "whatsappLink",
+              "value": "https://wa.me/51987642958?text=Hola%20Andree-AI%2C%20recib%C3%AD%20su%20correo%20y%20quiero%20m%C3%A1s%20informaci%C3%B3n",
+              "type": "string"
+            },
+            {
+              "id": "cat-0002-catalogo",
+              "name": "catalogo",
+              "value": "1) CONSULTORÍA DE IA\n- Qué es: diagnóstico de procesos de la empresa, identificación de casos de uso de IA generativa y diseño e implementación de agentes y automatizaciones (n8n, Claude, chatbots, flujos de correo, extracción de documentos).\n- Para quién: gerentes, jefes de área y pymes que quieren ahorrar tiempo y reducir errores.\n- Modalidad: virtual o presencial.\n- Duración: según alcance (diagnóstico inicial + propuesta).\n- Entregables: mapa de oportunidades, prototipo funcional y plan de implementación.\n- Inversión: [POR DEFINIR]\n\n2) MASTERCLASS \"Agentes de IA para tu empresa\"\n- Qué es: sesión práctica en vivo donde se construye un agente de IA paso a paso, sin necesidad de programar.\n- Para quién: profesionales y emprendedores que quieren aplicar IA en su trabajo diario.\n- Modalidad: virtual en vivo, con grabación.\n- Duración: 3 horas.\n- Incluye: plantillas de flujos, material descargable y certificado de participación.\n- Fecha: [POR DEFINIR]\n- Inversión: [POR DEFINIR]\n\n3) CONFERENCIA \"IA Generativa y Agentes: el nuevo equipo de tu empresa\"\n- Qué es: charla inspiradora y aplicada sobre cómo la IA generativa y los agentes están transformando las organizaciones, con casos reales.\n- Para quién: eventos corporativos, gremios, universidades y equipos directivos.\n- Modalidad: presencial o virtual.\n- Duración: 60 a 90 minutos, con ronda de preguntas.\n- Fecha y lugar: a coordinar con el organizador.\n- Inversión: [POR DEFINIR]\n\nCONTACTO\n- WhatsApp: +51 987 642 958\n- Correo: [POR DEFINIR]\n- Web / link de inscripción: [POR DEFINIR]",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000004",
+      "name": "Catálogo de servicios",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [120, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-0001-chat",
+              "leftValue": "={{ $json.chatInput }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000005",
+      "name": "¿Viene del chat?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [340, 0]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=Eres el asistente comercial virtual de {{ $json.marca }}. Hablas en español, con tono cálido, profesional y breve (máximo 4-5 líneas por respuesta).\n\nCATÁLOGO OFICIAL (única fuente de información):\n{{ $json.catalogo }}\n\nTU OBJETIVO\n1. Responder dudas sobre la Consultoría de IA, la Masterclass y la Conferencia usando SOLO el catálogo.\n2. Detectar qué servicio(s) le interesan a la persona.\n3. Pedir su nombre y su correo electrónico para enviarle la información completa.\n4. Cuando tengas nombre + correo + servicio(s), confirma el correo con la persona y usa la herramienta \"Enviar_promomail\".\n5. Después de enviarlo, avisa que ya le llegó el correo (que revise también spam) y ofrece ayuda adicional.\n\nCÓMO USAR LA HERRAMIENTA \"Enviar_promomail\"\n- El diseño del correo (colores, logo, botón de WhatsApp y firma) YA está hecho. NO escribas HTML.\n- Completa SIEMPRE los 6 campos, todos en texto simple: correo_cliente, asunto, nombre_cliente, servicios, detalle (info del catálogo de cada servicio de interés, máx. 150 palabras) y mensaje_personal (1-2 frases).\n\nREGLAS\n- Nunca inventes precios, fechas, links ni datos de contacto. Si en el catálogo dice [POR DEFINIR], di que un asesor le enviará ese dato personalmente y NO escribas \"[POR DEFINIR]\".\n- No envíes el promomail sin un correo válido.\n- Si preguntan algo fuera de estos servicios, responde amablemente que solo puedes ayudar con los servicios de {{ $json.marca }}."
+        }
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000006",
+      "name": "Agente Chatbot",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [620, 200]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-5-5",
+          "mode": "id"
+        },
+        "options": {
+          "temperature": 0.4,
+          "maxTokensToSample": 8192
+        }
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000007",
+      "name": "Claude (chatbot)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [480, 440]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Chat Andree-AI').item.json.sessionId }}",
+        "contextWindowLength": 12
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000008",
+      "name": "Memoria del chat",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [640, 440]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Envía el promomail de Andree-AI Agente consulting al correo del cliente. El diseño del correo ya está hecho: solo envía los 6 datos en texto simple. Úsala solo cuando tengas el nombre, un correo válido y el/los servicio(s) de interés.",
+        "sendTo": "={{ $fromAI('correo_cliente', 'Correo electrónico del cliente, confirmado en la conversación', 'string') }}",
+        "subject": "={{ $fromAI('asunto', 'Asunto corto y atractivo que mencione el servicio y la marca Andree-AI Agente consulting', 'string') }}",
+        "emailType": "html",
+        "message": "=<div style=\"max-width:600px;margin:auto;font-family:Arial,Helvetica,sans-serif;color:#1f2937;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden\"><div style=\"background:#0B1F3A;padding:24px;text-align:center\"><h1 style=\"margin:0;color:#ffffff;font-size:22px\">Andree-AI Agente consulting</h1><p style=\"margin:6px 0 0;color:#12B5A6;font-size:14px\">Consultoría de IA · Masterclass · Conferencia</p></div><div style=\"padding:24px\"><p style=\"font-size:16px\">Hola <b>{{ $fromAI('nombre_cliente', 'Nombre del cliente', 'string') }}</b>,</p><p style=\"font-size:15px;line-height:1.6\">Gracias por tu interés en <b>{{ $fromAI('servicios', 'Servicio(s) de interés separados por coma, ej. Masterclass, Conferencia', 'string') }}</b>.</p><div style=\"background:#f3fbfa;border-left:4px solid #12B5A6;padding:16px;font-size:15px;line-height:1.6;white-space:pre-line\">{{ $fromAI('detalle', 'Información de cada servicio de interés tomada del catálogo, en texto simple (sin HTML), máximo 150 palabras; un párrafo por servicio', 'string') }}</div><p style=\"font-size:15px;line-height:1.6\">{{ $fromAI('mensaje_personal', 'Una o dos frases personalizadas según lo conversado, en texto simple', 'string') }}</p><div style=\"text-align:center;margin:28px 0\"><a href=\"{{ $('Catálogo de servicios').item.json.whatsappLink }}\" target=\"_blank\" style=\"background:#12B5A6;color:#ffffff;text-decoration:none;padding:14px 28px;border-radius:6px;font-weight:bold;display:inline-block\">Escríbenos por WhatsApp</a></div><p style=\"font-size:15px\">Saludos cordiales,<br><b>Equipo Andree-AI Agente consulting</b></p></div></div>",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Andree-AI Agente consulting"
+        }
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000009",
+      "name": "Herramienta: Enviar promomail",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [800, 440]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Redacta el promomail para este prospecto que llenó el formulario.\n\nNombre: {{ $json['Nombre completo'] }}\nEmpresa: {{ $json['Empresa'] || 'No indicó' }}\nServicios de interés: {{ [].concat($json['Servicios de interés']).join(', ') }}\nMensaje del prospecto: {{ $json['Mensaje o consulta'] || 'Sin mensaje' }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Eres el agente de marketing de {{ $json.marca }}. Redactas promomails en español, persuasivos pero profesionales.\n\nCATÁLOGO OFICIAL (única fuente de información):\n{{ $json.catalogo }}\n\nINSTRUCCIONES\n- Incluye SOLO los servicios que la persona marcó, cada uno en su propio bloque: qué es, para quién, modalidad, duración y qué incluye.\n- Si escribió un mensaje, respóndelo brevemente al inicio, de forma personalizada.\n- Asunto: corto, atractivo, con el nombre del servicio (o \"nuestros servicios\" si son varios) y la marca.\n- HTML: estilos en línea, ancho máximo 600px, encabezado con la marca sobre fondo azul oscuro #0B1F3A, acento turquesa #12B5A6, botón de llamado a la acción (\"Agenda por WhatsApp\" o \"Reserva tu cupo por WhatsApp\") como etiqueta <a> cuyo href sea EXACTAMENTE {{ $json.whatsappLink }} con target=\"_blank\" (nunca un botón sin enlace), y firma \"Equipo {{ $json.marca }}\".\n- Nunca inventes precios, fechas, links ni datos de contacto. Si en el catálogo dice [POR DEFINIR], escribe que un asesor le enviará ese dato personalmente y NO muestres \"[POR DEFINIR]\". Para contacto o agenda, invita siempre a escribir por WhatsApp.\n- Devuelve solo el JSON pedido."
+        }
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000010",
+      "name": "Agente Redactor de Promomail",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [620, -200]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-5-5",
+          "mode": "id"
+        },
+        "options": {
+          "temperature": 0.5,
+          "maxTokensToSample": 4096
+        }
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000011",
+      "name": "Claude (redactor)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [540, -440]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"asunto\": \"María, descubre la Masterclass de Agentes de IA | Andree-AI Agente consulting\",\n  \"html\": \"<div style=\\\"max-width:600px;margin:auto;font-family:Arial,sans-serif\\\">...</div>\"\n}"
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000012",
+      "name": "Formato del promomail",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [740, -440]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Catálogo de servicios').item.json['Correo electrónico'] }}",
+        "subject": "={{ $json.output.asunto }}",
+        "emailType": "html",
+        "message": "={{ $json.output.html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Andree-AI Agente consulting"
+        }
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000013",
+      "name": "Enviar promomail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [960, -200],
+      "webhookId": "9a4c1e7f-6d2b-4e3a-b854-andreeaigmail1"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "✅ ¡Listo! Revisa tu correo",
+        "completionMessage": "=Gracias, {{ $('Catálogo de servicios').item.json['Nombre completo'] }}. Te enviamos la información de {{ [].concat($('Catálogo de servicios').item.json['Servicios de interés']).join(', ') }} a {{ $('Catálogo de servicios').item.json['Correo electrónico'] }}. Si no lo ves, revisa la carpeta de spam. — Andree-AI Agente consulting",
+        "options": {}
+      },
+      "id": "aa1c0001-0000-4000-8000-000000000014",
+      "name": "Confirmación",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [1180, -200],
+      "webhookId": "3b8d5f2a-1c7e-4a9b-8d63-andreeaiconf01"
+    }
+  ],
+  "connections": {
+    "Formulario Andree-AI": {
+      "main": [[{ "node": "Catálogo de servicios", "type": "main", "index": 0 }]]
+    },
+    "Chat Andree-AI": {
+      "main": [[{ "node": "Catálogo de servicios", "type": "main", "index": 0 }]]
+    },
+    "Catálogo de servicios": {
+      "main": [[{ "node": "¿Viene del chat?", "type": "main", "index": 0 }]]
+    },
+    "¿Viene del chat?": {
+      "main": [
+        [{ "node": "Agente Chatbot", "type": "main", "index": 0 }],
+        [{ "node": "Agente Redactor de Promomail", "type": "main", "index": 0 }]
+      ]
+    },
+    "Claude (chatbot)": {
+      "ai_languageModel": [[{ "node": "Agente Chatbot", "type": "ai_languageModel", "index": 0 }]]
+    },
+    "Memoria del chat": {
+      "ai_memory": [[{ "node": "Agente Chatbot", "type": "ai_memory", "index": 0 }]]
+    },
+    "Herramienta: Enviar promomail": {
+      "ai_tool": [[{ "node": "Agente Chatbot", "type": "ai_tool", "index": 0 }]]
+    },
+    "Claude (redactor)": {
+      "ai_languageModel": [[{ "node": "Agente Redactor de Promomail", "type": "ai_languageModel", "index": 0 }]]
+    },
+    "Formato del promomail": {
+      "ai_outputParser": [[{ "node": "Agente Redactor de Promomail", "type": "ai_outputParser", "index": 0 }]]
+    },
+    "Agente Redactor de Promomail": {
+      "main": [[{ "node": "Enviar promomail", "type": "main", "index": 0 }]]
+    },
+    "Enviar promomail": {
+      "main": [[{ "node": "Confirmación", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Lima"
+  },
+  "active": false,
+  "tags": []
+}
