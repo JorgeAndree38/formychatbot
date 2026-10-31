@@ -379,11 +379,12 @@
   <script type="module">
     import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat@1.42.6/dist/chat.bundle.es.js';
 
+    try { localStorage.removeItem('n8n-chat/sessionId'); } catch (e) {}
     createChat({
       webhookUrl: 'https://jorge38.app.n8n.cloud/webhook/7f2b9c4d-3e5a-4c8b-a172-andreeaichat01/chat',
       mode: 'window',
       showWelcomeScreen: false,
-      loadPreviousSession: true,
+      loadPreviousSession: false,
       defaultLanguage: 'en',
       initialMessages: [
         '¡Hola! 👋 Soy el asistente virtual de Andree-AI Agente consulting.',
