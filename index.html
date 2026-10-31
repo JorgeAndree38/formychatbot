@@ -41,8 +41,7 @@
     }
     .chat-header { gap: 2px !important; }
     .chat-header h1 { font-size: 1.15em !important; line-height: 1.3; margin: 0; }
-    .chat-header p { font-size: .85em !important; margin: 4px 0 0; opacity: .85; };
-    }
+    .chat-header p { font-size: .85em !important; margin: 4px 0 0; opacity: .85; }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
@@ -79,7 +78,7 @@
     }
     .btn-primary { background: var(--teal); color: #fff; }
     .btn-primary:hover { background: var(--teal-dark); }
-    .btn-ghost { border-color: rgba(255,255,255,.35); color: #fff; }
+    .btn-ghost { border-color: rgba(255,255,255,.35); color: #fff; background: transparent; }
     .btn-ghost:hover { border-color: #fff; }
     .btn-outline { border-color: var(--teal); color: var(--teal-dark); background: transparent; }
     .btn-outline:hover { background: var(--teal); color: #fff; }
@@ -142,7 +141,10 @@
     .facts { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 9px; font-size: 14.5px; }
     .facts li { display: flex; gap: 8px; }
     .facts b { color: var(--navy); min-width: 92px; }
-    .service .btn { margin-top: auto; }
+    .card-actions { margin-top: auto; display: grid; gap: 8px; }
+    button.btn { font-family: inherit; }
+    .btn-link { background: transparent; color: var(--teal-dark); border-color: transparent; }
+    .btn-link:hover { background: #e3f7f5; }
 
     /* Pasos */
     .steps-bg { background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -193,6 +195,7 @@
       .request { padding: 38px 24px; }
     }
     @media (max-width: 560px) {
+      :root { --chat--window--width: calc(100vw - 24px); --chat--window--height: calc(100vh - 120px); }
       .wrap { padding: 0 16px; }
       .hero { padding: 64px 0 72px; }
       section { padding: 64px 0; }
@@ -228,7 +231,7 @@
           <p class="lead">Te ayudamos a identificar dónde la inteligencia artificial ahorra tiempo y reduce errores, y la implementamos con agentes y automatizaciones que trabajan por ti.</p>
           <div class="hero-ctas">
             <a class="btn btn-primary" href="#solicitar">Quiero recibir información</a>
-            <a class="btn btn-ghost" href="#servicios">Ver servicios</a>
+            <button class="btn btn-ghost" type="button" data-ask="Hola, quiero usar IA en mi empresa. ¿Qué servicio me recomiendas?">Hablar con el asistente</button>
           </div>
         </div>
         <aside class="hero-card">
@@ -266,7 +269,10 @@
               <li><b>Duración</b>Según alcance</li>
               <li><b>Entregables</b>Mapa de oportunidades, prototipo y plan</li>
             </ul>
-            <a class="btn btn-primary" href="#solicitar">Agendar diagnóstico</a>
+            <div class="card-actions">
+              <a class="btn btn-primary abrir-form" href="https://jorge38.app.n8n.cloud/form/02eac0dd-eccc-4595-9ec6-c28c8a8a4f67" target="_blank" rel="noopener">Recibir información</a>
+              <button class="btn btn-link" type="button" data-ask="Hola, quiero saber más sobre la Consultoría de IA para mi empresa.">Preguntar al asistente</button>
+            </div>
           </article>
 
           <article class="service">
@@ -282,7 +288,10 @@
               <li><b>Duración</b>3 horas</li>
               <li><b>Incluye</b>Plantillas, material y certificado</li>
             </ul>
-            <a class="btn btn-outline" href="#solicitar">Reservar mi cupo</a>
+            <div class="card-actions">
+              <a class="btn btn-outline abrir-form" href="https://jorge38.app.n8n.cloud/form/02eac0dd-eccc-4595-9ec6-c28c8a8a4f67" target="_blank" rel="noopener">Recibir información</a>
+              <button class="btn btn-link" type="button" data-ask="Hola, me interesa la Masterclass de Agentes de IA. ¿Me cuentas más?">Preguntar al asistente</button>
+            </div>
           </article>
 
           <article class="service">
@@ -298,7 +307,10 @@
               <li><b>Duración</b>60 a 90 min con preguntas</li>
               <li><b>Fecha</b>A coordinar con el organizador</li>
             </ul>
-            <a class="btn btn-outline" href="#solicitar">Solicitar conferencia</a>
+            <div class="card-actions">
+              <a class="btn btn-outline abrir-form" href="https://jorge38.app.n8n.cloud/form/02eac0dd-eccc-4595-9ec6-c28c8a8a4f67" target="_blank" rel="noopener">Recibir información</a>
+              <button class="btn btn-link" type="button" data-ask="Hola, quiero información sobre la Conferencia de IA Generativa y Agentes para un evento.">Preguntar al asistente</button>
+            </div>
           </article>
         </div>
       </div>
@@ -379,7 +391,9 @@
   <script type="module">
     import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat@1.42.6/dist/chat.bundle.es.js';
 
+    // Cada visita empieza una conversación nueva (sin arrastrar mensajes viejos de la memoria del agente)
     try { localStorage.removeItem('n8n-chat/sessionId'); } catch (e) {}
+
     createChat({
       webhookUrl: 'https://jorge38.app.n8n.cloud/webhook/7f2b9c4d-3e5a-4c8b-a172-andreeaichat01/chat',
       mode: 'window',
@@ -401,12 +415,33 @@
       },
     });
 
-    // El botón "Hablar con el asistente virtual" abre la ventana del chat
-    document.getElementById('abrir-chat').addEventListener('click', () => {
+    const esperar = ms => new Promise(r => setTimeout(r, ms));
+
+    function abrirChat() {
       const toggle = document.querySelector('.chat-window-toggle');
       const ventana = document.querySelector('.chat-window');
       if (toggle && !(ventana && ventana.offsetParent)) toggle.click();
-    });
+    }
+
+    // Abre el chat y envía una pregunta lista sobre el servicio elegido
+    async function preguntar(texto) {
+      abrirChat();
+      for (let i = 0; i < 40; i++) {
+        const campo = document.querySelector('.chat-inputs textarea');
+        const enviar = document.querySelector('.chat-input-send-button');
+        if (campo && enviar && campo.offsetParent) {
+          campo.value = texto;
+          campo.dispatchEvent(new Event('input', { bubbles: true }));
+          await esperar(60);
+          enviar.click();
+          return;
+        }
+        await esperar(100);
+      }
+    }
+
+    document.getElementById('abrir-chat').addEventListener('click', abrirChat);
+    document.querySelectorAll('[data-ask]').forEach(b => b.addEventListener('click', () => preguntar(b.dataset.ask)));
   </script>
 </body>
 </html>
